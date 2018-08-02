@@ -219,7 +219,7 @@ static bool sign_data(const void *data_to_sign, size_t data_size,
 		goto out;
 	}
 
-	sig_size = BIO_get_mem_data(bio, &sig);
+	sig_size = BIO_get_mem_data(bio, (char **)&sig);
 	*sig_ret = xmemdup(sig, sig_size);
 	*sig_size_ret = sig_size;
 	ok = true;
@@ -378,7 +378,7 @@ int append_signed_measurement(struct filedes *out,
 	tmp = extbuf = xzalloc(FSVERITY_EXTLEN(sig_size));
 	fsverity_append_extension(&tmp, FS_VERITY_EXT_PKCS7_SIGNATURE,
 				  sig, sig_size);
-	ASSERT(tmp == extbuf + FSVERITY_EXTLEN(sig_size));
+	ASSERT(tmp == ((char *)extbuf) + FSVERITY_EXTLEN(sig_size));
 	if (!full_write(out, extbuf, FSVERITY_EXTLEN(sig_size)))
 		goto out_err;
 	status = 0;

@@ -25,7 +25,10 @@ typedef uint64_t u64;
 #define __printf(fmt_idx, vargs_idx) \
 	__attribute__((format(printf, fmt_idx, vargs_idx)))
 
+#ifndef __noreturn
 #define __noreturn	__attribute__((noreturn))
+#endif
+
 #define __cold		__attribute__((cold))
 
 #define min(a, b) ({			\

@@ -1,5 +1,5 @@
 EXE := fsverity
-CFLAGS := -O2 -Wall
+CFLAGS := -O2 -Wall -Werror -Wpointer-arith
 CPPFLAGS := -D_FILE_OFFSET_BITS=64
 LDLIBS := -lcrypto
 DESTDIR := /usr/local

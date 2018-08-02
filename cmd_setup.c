@@ -213,8 +213,8 @@ out:
 void fsverity_append_extension(void **buf_p, int type,
 			       const void *ext, size_t extlen)
 {
-	void *buf = *buf_p;
-	struct fsverity_extension *hdr = buf;
+	char *buf = *buf_p;
+	struct fsverity_extension *hdr = *buf_p;
 
 	hdr->type = cpu_to_le16(type);
 	hdr->length = cpu_to_le32(sizeof(*hdr) + extlen);
@@ -224,7 +224,7 @@ void fsverity_append_extension(void **buf_p, int type,
 	buf += extlen;
 	memset(buf, 0, -extlen & 7);
 	buf += -extlen & 7;
-	ASSERT(buf - *buf_p == FSVERITY_EXTLEN(extlen));
+	ASSERT(buf - (char *)*buf_p == FSVERITY_EXTLEN(extlen));
 	*buf_p = buf;
 }
 
@@ -266,14 +266,14 @@ static int append_fsverity_descriptor(const struct fsveritysetup_params *params,
 	auth_ext_count += params->num_elisions_and_patches;
 	desc->auth_ext_count = cpu_to_le16(auth_ext_count);
 
-	buf += sizeof(*desc);
+	buf = ((char *)buf) + sizeof(*desc);
 	fsverity_append_extension(&buf, FS_VERITY_EXT_ROOT_HASH,
 				  root_hash, params->hash_alg->digest_size);
 	if (params->saltlen)
 		fsverity_append_extension(&buf, FS_VERITY_EXT_SALT,
 					  params->salt, params->saltlen);
 	append_elide_patch_exts(&buf, params);
-	ASSERT(buf - (void *)desc == desc_auth_len);
+	ASSERT((char *)buf - (char *)desc == desc_auth_len);
 
 	hash_update(hash, desc, desc_auth_len);
 	if (!full_write(out, desc, desc_auth_len))

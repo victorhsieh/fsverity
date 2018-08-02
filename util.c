@@ -182,7 +182,7 @@ bool full_read(struct filedes *file, void *buf, size_t count)
 			error_msg("unexpected end-of-file on '%s'", file->name);
 			return false;
 		}
-		buf += n;
+		buf = ((char *)buf) + n;
 		count -= n;
 		file->pos += n;
 	}
@@ -202,7 +202,7 @@ bool full_pread(struct filedes *file, void *buf, size_t count, u64 offset)
 			error_msg("unexpected end-of-file on '%s'", file->name);
 			return false;
 		}
-		buf += n;
+		buf = (char *)buf + n;
 		count -= n;
 		offset += n;
 	}
@@ -218,7 +218,7 @@ bool full_write(struct filedes *file, const void *buf, size_t count)
 			error_msg_errno("writing to '%s'", file->name);
 			return false;
 		}
-		buf += n;
+		buf = ((char *)buf) + n;
 		count -= n;
 		file->pos += n;
 	}
@@ -235,7 +235,7 @@ bool full_pwrite(struct filedes *file, const void *buf, size_t count,
 			error_msg_errno("writing to '%s'", file->name);
 			return false;
 		}
-		buf += n;
+		buf = ((char *)buf) + n;
 		count -= n;
 		offset += n;
 	}
